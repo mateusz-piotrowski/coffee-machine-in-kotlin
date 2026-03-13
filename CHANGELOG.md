@@ -5,6 +5,7 @@
 **Added:**
 
 - Initial Coffee Machine project files
+- Task 1 solution
 
 **Updated:**
 
