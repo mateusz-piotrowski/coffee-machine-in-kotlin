@@ -2,9 +2,13 @@
 
 ## [0.0.3] (March 13, 2026)
 
+**Added:**
+
+- Initial Coffee Machine project files
+
 **Updated:**
 
-- .gitignore file
+- .gitignore file for improved project configuration
 
 ## [0.0.2] (December 27, 2025)
 
