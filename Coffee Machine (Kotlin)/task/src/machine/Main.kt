@@ -1,29 +1,97 @@
 package machine
 
 fun main() {
-    println("Write how many ml of water the coffee machine has:")
-    val water = readLine()!!.toInt()
+    val machine = CoffeeMachine()
 
-    println("Write how many ml of milk the coffee machine has:")
-    val milk = readLine()!!.toInt()
+    machine.printState()
+    println("Write action (buy, fill, take): ")
 
-    println("Write how many grams of coffee beans the coffee machine has:")
-    val beans = readLine()!!.toInt()
+    when (readln().trim()) {
+        "buy" -> machine.buy()
+        "fill" -> machine.fill()
+        "take" -> machine.take()
+    }
 
-    println("Write how many cups of coffee you will need:")
-    val cups = readLine()!!.toInt()
+    machine.printState()
+}
 
-    // Calculate maximum cups possible for each resource
-    val maxWaterCups = water / 200
-    val maxMilkCups = milk / 50
-    val maxBeansCups = beans / 15
+class CoffeeMachine {
+    var water = 400
+    var milk = 540
+    var beans = 120
+    var cups = 9
+    var money = 550
 
-    // Find the limiting factor (minimum of all maximums)
-    val maxPossibleCups = minOf(maxWaterCups, maxMilkCups, maxBeansCups)
+    fun printState() {
+        println("The coffee machine has:")
+        println("$water ml of water")
+        println("$milk ml of milk")
+        println("$beans g of coffee beans")
+        println("$cups disposable cups")
+        println("$$money of money")
+        println()
+    }
 
-    when {
-        maxPossibleCups == cups -> println("Yes, I can make that amount of coffee")
-        maxPossibleCups > cups -> println("Yes, I can make that amount of coffee (and even ${maxPossibleCups - cups} more than that)")
-        else -> println("No, I can make only $maxPossibleCups cups of coffee")
+    fun buy() {
+        println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino: ")
+        when (readln().trim()) {
+            "1" -> buyEspresso()
+            "2" -> buyLatte()
+            "3" -> buyCappuccino()
+        }
+    }
+
+    private fun buyEspresso() {
+        if (water >= 250 && beans >= 16 && cups >= 1) {
+            water -= 250
+            beans -= 16
+            cups -= 1
+            money += 4
+            println("Enough resources, making you a coffee!")
+        } else {
+            println("Sorry, not enough resources")
+        }
+    }
+
+    private fun buyLatte() {
+        if (water >= 350 && milk >= 75 && beans >= 20 && cups >= 1) {
+            water -= 350
+            milk -= 75
+            beans -= 20
+            cups -= 1
+            money += 7
+            println("Enough resources, making you a coffee!")
+        } else {
+            println("Sorry, not enough resources")
+        }
+    }
+
+    private fun buyCappuccino() {
+        if (water >= 200 && milk >= 100 && beans >= 12 && cups >= 1) {
+            water -= 200
+            milk -= 100
+            beans -= 12
+            cups -= 1
+            money += 6
+            println("Enough resources, making you a coffee!")
+        } else {
+            println("Sorry, not enough resources")
+        }
+    }
+
+    fun fill() {
+        println("Write how many ml of water you want to add: ")
+        water += readln().trim().toInt()
+        println("Write how many ml of milk you want to add: ")
+        milk += readln().trim().toInt()
+        println("Write how many grams of coffee beans you want to add: ")
+        beans += readln().trim().toInt()
+        println("Write how many disposable cups you want to add: ")
+        cups += readln().trim().toInt()
+    }
+
+    fun take() {
+        println("I gave you $$money")
+        money = 0
     }
 }
