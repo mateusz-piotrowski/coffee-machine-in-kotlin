@@ -6,6 +6,10 @@
 
 - Task 6 solution
 
+**Updated:**
+
+- README.md
+
 ## [0.0.7] (March 17, 2026)
 
 **Added:**
