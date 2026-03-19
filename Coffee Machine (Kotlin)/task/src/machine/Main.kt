@@ -1,96 +1,151 @@
 package machine
 
 fun main() {
+    val machine = CoffeeMachine()
+
+    println("Write action (buy, fill, take, remaining, exit):")
+
+    while (true) {
+        val input = readln().trim()
+        if (input == "exit") break
+        machine.runCommand(input)
+    }
+}
+
+class CoffeeMachine {
     var water = 400
     var milk = 540
     var beans = 120
     var cups = 9
     var money = 550
 
-    while (true) {
-        print("Write action (buy, fill, take, remaining, exit): ")
-        val action = readLine()!!.trim().lowercase()
+    private enum class State {
+        MAIN, BUYING, FILLING_WATER, FILLING_MILK, FILLING_BEANS, FILLING_CUPS
+    }
 
-        when (action) {
+    private var state = State.MAIN
+
+    fun runCommand(command: String) {
+        val input = command.trim()
+
+        when (state) {
+            State.MAIN -> handleMainMenu(input)
+            State.BUYING -> handleBuying(input)
+            State.FILLING_WATER -> handleFillingWater(input)
+            State.FILLING_MILK -> handleFillingMilk(input)
+            State.FILLING_BEANS -> handleFillingBeans(input)
+            State.FILLING_CUPS -> handleFillingCups(input)
+        }
+    }
+
+    private fun handleMainMenu(input: String) {
+        when (input) {
             "buy" -> {
-                print("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino, back - to main menu: ")
-                val choice = readLine()!!.trim().lowercase()
-
-                if (choice == "back") continue
-
-                val coffeeType = choice.toIntOrNull()
-                when (coffeeType) {
-                    1 -> if (buyCoffee(250, 0, 16, 1, 4, water, milk, beans, cups)) {
-                        water -= 250
-                        beans -= 16
-                        cups -= 1
-                        money += 4
-                    }
-                    2 -> if (buyCoffee(350, 75, 20, 1, 7, water, milk, beans, cups)) {
-                        water -= 350
-                        milk -= 75
-                        beans -= 20
-                        cups -= 1
-                        money += 7
-                    }
-                    3 -> if (buyCoffee(200, 100, 12, 1, 6, water, milk, beans, cups)) {
-                        water -= 200
-                        milk -= 100
-                        beans -= 12
-                        cups -= 1
-                        money += 6
-                    }
-                }
+                println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino, back - to main menu:")
+                state = State.BUYING
             }
-
             "fill" -> {
-                print("Write how many ml of water you want to add: ")
-                water += readLine()!!.toInt()
-                print("Write how many ml of milk you want to add: ")
-                milk += readLine()!!.toInt()
-                print("Write how many grams of coffee beans you want to add: ")
-                beans += readLine()!!.toInt()
-                print("Write how many disposable cups you want to add: ")
-                cups += readLine()!!.toInt()
+                println("Write how many ml of water you want to add:")
+                state = State.FILLING_WATER
             }
-
             "take" -> {
                 println("I gave you $$money")
                 money = 0
             }
-
-            "remaining" -> {
-                println("The coffee machine has:")
-                println("$water ml of water")
-                println("$milk ml of milk")
-                println("$beans g of coffee beans")
-                println("$cups disposable cups")
-                println("$$money of money")
-            }
-
-            "exit" -> return
+            "remaining" -> printState()
+            "exit" -> {}
+            else -> println("Write action (buy, fill, take, remaining, exit):")
         }
     }
-}
 
-fun buyCoffee(waterNeeded: Int, milkNeeded: Int, beansNeeded: Int, cupsNeeded: Int, price: Int,
-              currentWater: Int, currentMilk: Int, currentBeans: Int, currentCups: Int): Boolean {
-    if (currentWater < waterNeeded) {
-        println("Sorry, not enough water!")
-        return false
+    private fun handleBuying(input: String) {
+        when (input) {
+            "1" -> makeEspresso()
+            "2" -> makeLatte()
+            "3" -> makeCappuccino()
+            "back" -> {
+                state = State.MAIN
+                println("Write action (buy, fill, take, remaining, exit):")
+            }
+        }
     }
-    if (currentMilk < milkNeeded) {
-        println("Sorry, not enough milk!")
-        return false
+
+    private fun handleFillingWater(input: String) {
+        water += input.toInt()
+        println("Write how many ml of milk you want to add:")
+        state = State.FILLING_MILK
     }
-    if (currentBeans < beansNeeded) {
-        println("Sorry, not enough beans!")
-        return false
+
+    private fun handleFillingMilk(input: String) {
+        milk += input.toInt()
+        println("Write how many grams of coffee beans you want to add:")
+        state = State.FILLING_BEANS
     }
-    if (currentCups < cupsNeeded) {
-        println("Sorry, not enough cups!")
-        return false
+
+    private fun handleFillingBeans(input: String) {
+        beans += input.toInt()
+        println("Write how many disposable cups you want to add:")
+        state = State.FILLING_CUPS
     }
-    println("I have enough resources, making you a coffee!")
-    return true
+
+    private fun handleFillingCups(input: String) {
+        cups += input.toInt()
+        state = State.MAIN
+        println("Write action (buy, fill, take, remaining, exit):")
+    }
+
+    private fun makeEspresso() {
+        if (water >= 250 && beans >= 16 && cups >= 1) {
+            water -= 250
+            beans -= 16
+            cups -= 1
+            money += 4
+            println("I have enough resources, making you a coffee!")
+        } else {
+            println("Sorry, not enough resources!")
+        }
+        state = State.MAIN
+        println("Write action (buy, fill, take, remaining, exit):")
+    }
+
+    private fun makeLatte() {
+        if (water >= 350 && milk >= 75 && beans >= 20 && cups >= 1) {
+            water -= 350
+            milk -= 75
+            beans -= 20
+            cups -= 1
+            money += 7
+            println("I have enough resources, making you a coffee!")
+        } else {
+            println("Sorry, not enough water!")
+        }
+        state = State.MAIN
+        println("Write action (buy, fill, take, remaining, exit):")
+    }
+
+    private fun makeCappuccino() {
+        if (water >= 200 && milk >= 100 && beans >= 12 && cups >= 1) {
+            water -= 200
+            milk -= 100
+            beans -= 12
+            cups -= 1
+            money += 6
+            println("I have enough resources, making you a coffee!")
+        } else {
+            println("Sorry, not enough resources!")
+        }
+        state = State.MAIN
+        println("Write action (buy, fill, take, remaining, exit):")
+    }
+
+    fun printState() {
+        println("The coffee machine has:")
+        println("$water ml of water")
+        println("$milk ml of milk")
+        println("$beans g of coffee beans")
+        println("$cups disposable cups")
+        println("$$money of money")
+        println()
+        println("Write action (buy, fill, take, remaining, exit):")
+    }
 }
